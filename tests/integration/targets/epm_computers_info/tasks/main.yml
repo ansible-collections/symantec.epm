@@ -1,0 +1,8 @@
+- name: get computer info
+  symantec.epm.computers_info:
+  register: computers_info_out
+
+- name: ensure expected elements exist in the output of symantec.epm.computers_info
+  assert:
+    that:
+      - "'id_list' in computers_info_out"
