@@ -1,0 +1,8 @@
+- name: get groups info
+  symantec.epm.groups_info:
+  register: groups_info_out
+
+- name: ensure expected elements exist in the output of symantec.epm.groups_info
+  assert:
+    that:
+      - "'id_list' in groups_info_out"

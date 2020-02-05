@@ -1,0 +1,8 @@
+- name: get domains info
+  symantec.epm.domains_info:
+  register: domains_info_out
+
+- name: ensure expected elements exist in the output of symantec.epm.domains_info
+  assert:
+    that:
+      - "'id_list' in domains_info_out"

@@ -1,0 +1,29 @@
+---
+- name: Example use of various Symantec Endpoint Protection Manager modules
+  hosts: epm
+  gather_facts: no
+  connection: httpapi
+  vars:
+    ansible_network_os: symantec.epm.epm
+    ansible_user: Admin
+    ansible_httpapi_port: 8446
+    ansible_httpapi_validate_certs: no
+    ansible_httpapi_use_ssl: yes
+  tasks:
+    - name: Query for a list of computers in the inventory to run scan against
+      symantec.epm.computers_info:
+      register: computers_info
+
+    - name: Query for a list of groups in the inventory to run scan against
+      symantec.epm.groups_info:
+      register: groups_info
+
+    - name: Schedule Evidence of Compromise scan on endpoints
+      symantec.epm.baseline:
+        computers: "{{computers_info['id_list']}}"
+        groups: "{{groups_info['id_list']}}"
+
+    - name: Test failure
+      symantec.epm.baseline:
+        computers: "DOES_NOT_EXIST"
+
