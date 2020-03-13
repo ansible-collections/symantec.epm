@@ -62,6 +62,10 @@ sepm_data:
                          for the computer scheduled command
             returned: when C(computers) provided
             type: str
+command_ids:
+    description: List of all commandIDs spawned from this job
+    returned: always
+    type: list
 """
 
 EXAMPLES = """
@@ -106,7 +110,7 @@ def main():
 
     sclient = Sepclient(module)
 
-    client_response = sclient.scan_endpoints(
+    sepm_data = sclient.scan_endpoints(
         computer_ids=module.params["computers"],
         group_ids=module.params["groups"],
         scan_type=module.params["type"],
@@ -115,11 +119,16 @@ def main():
         ),
     )
 
-    if "errorCode" in client_response:
-        module.fail_json(msg="Failed to schedule Scan", sepm_data=client_response)
+    if "errorCode" in sepm_data:
+        module.fail_json(msg="Failed to schedule Scan", sepm_data=sepm_data)
 
-    module.exit_json(sepm_data=client_response, changed=True)
+    command_ids = []
+    if 'commandID_computer' in sepm_data:
+        command_ids.append(sepm_data['commandID_computer'])
+    if 'commandID_group' in sepm_data:
+        command_ids.append(sepm_data['commandID_group'])
 
+    module.exit_json(sepm_data=sepm_data, command_ids=command_ids, changed=True)
 
 if __name__ == "__main__":
     main()

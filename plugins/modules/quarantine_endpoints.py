@@ -65,7 +65,10 @@ sepm_data:
                          for the computer scheduled command
             returned: when C(groups) provided
             type: str
-
+command_ids:
+    description: List of all commandIDs spawned from this job
+    returned: always
+    type: list
 """
 
 EXAMPLES = """
@@ -110,16 +113,22 @@ def main():
     else:
         undo = None
 
-    client_response = sclient.quarantine_endpoints(
+    sepm_data = sclient.quarantine_endpoints(
         computer_ids=module.params["computers"],
         group_ids=module.params["groups"],
         undo=undo,
     )
 
-    if "errorCode" in client_response:
-        module.fail_json(msg="Failed to qaurantine.", sepm_data=client_response)
+    if "errorCode" in sepm_data:
+        module.fail_json(msg="Failed to qaurantine.", sepm_data=sepm_data)
 
-    module.exit_json(sepm_data=client_response, changed=True)
+    command_ids = []
+    if 'commandID_computer' in sepm_data:
+        command_ids.append(sepm_data['commandID_computer'])
+    if 'commandID_group' in sepm_data:
+        command_ids.append(sepm_data['commandID_group'])
+
+    module.exit_json(sepm_data=sepm_data, command_ids=command_ids, changed=True)
 
 
 if __name__ == "__main__":

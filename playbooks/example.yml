@@ -26,4 +26,3 @@
     - name: Test failure
       symantec.epm.baseline:
         computers: "DOES_NOT_EXIST"
-

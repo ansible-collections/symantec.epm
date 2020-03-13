@@ -38,7 +38,7 @@ notes:
     module is not idempotent. Every time this module is called via a task in a
     module a scan will be scheduled on the Endpoint Protection Manager.
 
-author: Ansible Security Automation Team (@maxamillion) <https://github.com/ansible-security>"
+author: "Ansible Security Automation Team (@maxamillion) <https://github.com/ansible-security>"
 """
 
 
@@ -59,6 +59,10 @@ sepm_data:
                          for the computer scheduled command
             returned: when C(groups) provided
             type: str
+command_ids:
+    description: List of all commandIDs spawned from this job
+    returned: always
+    type: list
 """
 
 EXAMPLES = """
@@ -113,8 +117,13 @@ def main():
             msg="Failed to schedule Baseline Application Data Upload",
             sepm_data=sepm_data,
         )
+    command_ids = []
+    if 'commandID_computer' in sepm_data:
+        command_ids.append(sepm_data['commandID_computer'])
+    if 'commandID_group' in sepm_data:
+        command_ids.append(sepm_data['commandID_group'])
 
-    module.exit_json(sepm_data=sepm_data, changed=True)
+    module.exit_json(sepm_data=sepm_data, command_ids=command_ids, changed=True)
 
 
 if __name__ == "__main__":
